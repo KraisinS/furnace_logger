@@ -1,0 +1,35 @@
+# Build output
+/build
+/dist
+*.o
+*.a
+*.so
+*.elf
+
+# IDE/Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# IDF build artifacts
+sdkconfig.old
+.sdkconfig
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Flash/firmware
+*.bin
+*.elf

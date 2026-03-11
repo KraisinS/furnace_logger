@@ -1,0 +1,5 @@
+idf_component_register(
+    SRCS "temp_sensor.c" "max6675.c"
+    INCLUDE_DIRS "include"
+    REQUIRES esp_common driver
+)

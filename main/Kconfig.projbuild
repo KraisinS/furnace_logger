@@ -1,0 +1,113 @@
+menu "Oven Temperature Logger Configuration"
+
+menu "Sensor Read Configuration"
+    config SENSOR_READ_INTERVAL
+        int "Sensor read interval (milliseconds)"
+        default 1000
+        range 100 10000
+        help
+            Interval between temperature updates.
+endmenu
+
+menu "MAX6675 Temperature Sensors"
+    config MAX6675_SENSOR1_MISO_PIN
+        int "MAX6675 Sensor 1 SO (MISO) GPIO pin"
+        default 19
+        help
+            Sensor 1 data output pin.
+
+    config MAX6675_SENSOR1_CLK_PIN
+        int "MAX6675 Sensor 1 SCK (CLK) GPIO pin"
+        default 18
+        help
+            Sensor 1 clock pin.
+
+    config MAX6675_SENSOR1_CS_PIN
+        int "MAX6675 Sensor 1 CS GPIO pin"
+        default 5
+        help
+            Chip Select pin for MAX6675 sensor 1 (Entrance).
+
+    config MAX6675_SENSOR2_MISO_PIN
+        int "MAX6675 Sensor 2 SO (MISO) GPIO pin"
+        default 34
+        help
+            Sensor 2 data output pin. GPIO34 is input-only, ideal for MISO.
+
+    config MAX6675_SENSOR2_CLK_PIN
+        int "MAX6675 Sensor 2 SCK (CLK) GPIO pin"
+        default 23
+        help
+            Sensor 2 clock pin.
+
+    config MAX6675_SENSOR2_CS_PIN
+        int "MAX6675 Sensor 2 CS GPIO pin"
+        default 4
+        help
+            Chip Select pin for MAX6675 sensor 2 (Middle).
+
+    config MAX6675_SENSOR3_MISO_PIN
+        int "MAX6675 Sensor 3 SO (MISO) GPIO pin"
+        default 27
+        help
+            Sensor 3 data output pin.
+
+    config MAX6675_SENSOR3_CLK_PIN
+        int "MAX6675 Sensor 3 SCK (CLK) GPIO pin"
+        default 13
+        help
+            Sensor 3 clock pin.
+
+    config MAX6675_SENSOR3_CS_PIN
+        int "MAX6675 Sensor 3 CS GPIO pin"
+        default 15
+        help
+            Chip Select pin for MAX6675 sensor 3 (Exit).
+endmenu
+
+menu "TM1637 Display Configuration"
+    config TM1637_DISPLAY1_CLK_PIN
+        int "TM1637 Display 1 CLK GPIO pin"
+        default 22
+        help
+            GPIO pin connected to TM1637 Display 1 CLK.
+
+    config TM1637_DISPLAY1_DIO_PIN
+        int "TM1637 Display 1 DIO GPIO pin"
+        default 21
+        help
+            GPIO pin connected to TM1637 Display 1 DIO.
+
+    config TM1637_DISPLAY2_CLK_PIN
+        int "TM1637 Display 2 CLK GPIO pin"
+        default 25
+        help
+            GPIO pin connected to TM1637 Display 2 CLK.
+
+    config TM1637_DISPLAY2_DIO_PIN
+        int "TM1637 Display 2 DIO GPIO pin"
+        default 26
+        help
+            GPIO pin connected to TM1637 Display 2 DIO.
+
+    config TM1637_DISPLAY3_CLK_PIN
+        int "TM1637 Display 3 CLK GPIO pin"
+        default 32
+        help
+            GPIO pin connected to TM1637 Display 3 CLK.
+
+    config TM1637_DISPLAY3_DIO_PIN
+        int "TM1637 Display 3 DIO GPIO pin"
+        default 33
+        help
+            GPIO pin connected to TM1637 Display 3 DIO.
+
+    config TM1637_BRIGHTNESS
+        int "TM1637 brightness (0-7)"
+        default 4
+        range 0 7
+        help
+            Display brightness level for all displays. 0 is dimmest, 7 is brightest.
+endmenu
+
+endmenu
