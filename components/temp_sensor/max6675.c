@@ -103,14 +103,14 @@ esp_err_t max6675_read_raw(max6675_device_t *device, uint16_t *raw_data) {
     int fault_bit = (value & 0x04) ? 1 : 0; // D2 = open TC fault
     float temp_celsius = temp_bits * 0.25f;
 
-    ESP_LOGI(TAG, "CS=%d: Raw=0x%04X Binary=%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",
+    ESP_LOGD(TAG, "CS=%d: Raw=0x%04X Binary=%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",
              (int)device->cs_pin, value, (value >> 15) & 1, (value >> 14) & 1,
              (value >> 13) & 1, (value >> 12) & 1, (value >> 11) & 1,
              (value >> 10) & 1, (value >> 9) & 1, (value >> 8) & 1,
              (value >> 7) & 1, (value >> 6) & 1, (value >> 5) & 1,
              (value >> 4) & 1, (value >> 3) & 1, (value >> 2) & 1,
              (value >> 1) & 1, (value >> 0) & 1);
-    ESP_LOGI(TAG, "CS=%d: TempBits=0x%03X (%d) Fault=%d → %.2f°C",
+    ESP_LOGD(TAG, "CS=%d: TempBits=0x%03X (%d) Fault=%d → %.2f°C",
              (int)device->cs_pin, temp_bits, (int)temp_bits, fault_bit,
              temp_celsius);
 
@@ -119,7 +119,7 @@ esp_err_t max6675_read_raw(max6675_device_t *device, uint16_t *raw_data) {
     uint16_t quick_reads[4];
     if ((device->read_count++ % 10) == 0) { // Every 10th read per sensor
         int diag_delay_us = is_sensor3 ? 250000 : 50000;
-        ESP_LOGI(TAG,
+        ESP_LOGD(TAG,
                  "CS=%d: DIAGNOSTIC - Reading 4x with %dms delay between "
                  "(conversion time):",
                  (int)device->cs_pin, is_sensor3 ? 250 : 50);
@@ -128,7 +128,7 @@ esp_err_t max6675_read_raw(max6675_device_t *device, uint16_t *raw_data) {
                 max6675_shift_in_frame(device, clk_delay, pre_delay);
 
             quick_reads[test] = test_val;
-            ESP_LOGI(TAG, "  Read[%d]: 0x%04X", test, test_val);
+            ESP_LOGD(TAG, "  Read[%d]: 0x%04X", test, test_val);
 
             // Delay between reads to allow MAX6675 to perform a new conversion
             if (test < 3) {
@@ -149,12 +149,12 @@ esp_err_t max6675_read_raw(max6675_device_t *device, uint16_t *raw_data) {
                      "or thermocouple disconnected",
                      (int)device->cs_pin, quick_reads[0]);
         } else if (all_same) {
-            ESP_LOGI(
+            ESP_LOGD(
                 TAG,
                 "CS=%d: Reads stable at 0x%04X (temperature not changing — OK)",
                 (int)device->cs_pin, quick_reads[0]);
         } else {
-            ESP_LOGI(TAG, "CS=%d: Reads vary — temperature actively changing",
+            ESP_LOGD(TAG, "CS=%d: Reads vary — temperature actively changing",
                      (int)device->cs_pin);
         }
     }
@@ -168,7 +168,7 @@ esp_err_t max6675_read_raw(max6675_device_t *device, uint16_t *raw_data) {
         ets_delay_us(20);
         int miso_idle_later = gpio_get_level(device->miso_pin);
 
-        ESP_LOGI(TAG,
+        ESP_LOGD(TAG,
                  "CS=4 line-check: SCK=%d (expected 0 idle), MISO idle=%d/%d",
                  sck_after_read, miso_idle_high, miso_idle_later);
         if (miso_idle_high == 0 && miso_idle_later == 0 && value == 0x0000) {
@@ -193,7 +193,7 @@ esp_err_t max6675_convert(uint16_t raw_data, float *temperature) {
     uint16_t temp_raw = (raw_data >> 3) & 0x0FFF;
     *temperature = temp_raw * MAX6675_RESOLUTION;
 
-    ESP_LOGI(TAG, "Conversion: raw=0x%04X, temp_raw=0x%03X (%d), temp=%.2f°C",
+    ESP_LOGD(TAG, "Conversion: raw=0x%04X, temp_raw=0x%03X (%d), temp=%.2f°C",
              raw_data, temp_raw, (int)temp_raw, *temperature);
 
     return ESP_OK;
@@ -247,14 +247,14 @@ esp_err_t max6675_read_temperature(max6675_device_t *device,
             // conversion result rather than re-reading the same register.
             ets_delay_us(250000);
             uint16_t rawn = max6675_shift_in_frame(device, 30, 40);
-            ESP_LOGI(TAG, "CS=15: anti-shift read[%d]=0x%04X (best=0x%04X)", n,
+            ESP_LOGD(TAG, "CS=15: anti-shift read[%d]=0x%04X (best=0x%04X)", n,
                      rawn, best_raw);
             if (max6675_frame_is_valid(rawn) && rawn < best_raw) {
                 best_raw = rawn;
             }
         }
         if (best_raw != raw_data) {
-            ESP_LOGI(TAG,
+            ESP_LOGD(TAG,
                      "CS=15: bit-shift corrected 0x%04X→0x%04X (%.2f°C→%.2f°C)",
                      raw_data, best_raw, ((raw_data >> 3) & 0x0FFF) * 0.25f,
                      ((best_raw >> 3) & 0x0FFF) * 0.25f);

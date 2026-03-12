@@ -84,14 +84,27 @@ ESP32-WROOM-IE
 │  GND  ─────────────────┼──→ MAX6675 GND (all)
 │  5V   ─────────────────┼──→ TM1637 VCC (if needed)
 │                        │
-│  SD Card (future)      │
-│  GPIO35 ───────────────┼──→ SD MISO  (input-only)
-│  GPIO14 ───────────────┼──→ SD MOSI
-│  GPIO27 ───────────────┼──→ SD CLK
-│  GPIO4  ───────────────┼──→ SD CS
+│  SD Card (6-pin module)│
+│  GPIO35 ───────────────┼──→ SD MISO  (DO)
+│  GPIO14 ───────────────┼──→ SD MOSI  (DI)
+│  GPIO12 ───────────────┼──→ SD SCK   (CLK)
+│  GPIO2  ───────────────┼──→ SD CS
+│  3.3V   ───────────────┼──→ SD VVV/VCC
+│  GND    ───────────────┼──→ SD GND
 │                        │
 └────────────────────────┘
 ```
+
+### SD Card Module (6-pin) Connection
+
+| SD Module Pin | ESP32 Pin |
+|---------------|-----------|
+| VVV (VCC)     | 3.3V      |
+| GND           | GND       |
+| MISO          | GPIO35    |
+| MOSI          | GPIO14    |
+| SCK           | GPIO12    |
+| CS            | GPIO2     |
 
 ## Notes
 
@@ -100,6 +113,7 @@ ESP32-WROOM-IE
 3. If using an external power source for displays, tie grounds together:
     ESP32 GND, display power GND, and all sensor GND must be common.
 4. For noise reduction, keep SO/SCK/CS wires short and avoid long parallel runs with power cables.
+5. SD card boot-strap caution: GPIO2 and GPIO12 are boot strap pins. Keep SD-CS (GPIO2) pulled HIGH at boot and avoid any external pull-up on GPIO12 that forces a wrong boot strap level.
 
 ## Build and Flash
 

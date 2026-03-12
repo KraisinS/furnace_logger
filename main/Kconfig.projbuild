@@ -110,4 +110,98 @@ menu "TM1637 Display Configuration"
             Display brightness level for all displays. 0 is dimmest, 7 is brightest.
 endmenu
 
+menu "SD Card Logging"
+    config ENABLE_SD_LOGGING
+        bool "Enable SD card logging"
+        default y
+        help
+            Mount SD card over SPI and periodically append temperatures to CSV files.
+
+    config SD_SPI_MISO_PIN
+        int "SD card SPI MISO GPIO pin"
+        default 35
+        help
+            MISO pin for SD card SPI interface.
+
+    config SD_SPI_MOSI_PIN
+        int "SD card SPI MOSI GPIO pin"
+        default 14
+        help
+            MOSI pin for SD card SPI interface.
+
+    config SD_SPI_CLK_PIN
+        int "SD card SPI CLK GPIO pin"
+        default 12
+        help
+            CLK pin for SD card SPI interface.
+
+    config SD_SPI_CS_PIN
+        int "SD card SPI CS GPIO pin"
+        default 2
+        help
+            CS pin for SD card SPI interface.
+
+    config SD_LOG_INTERVAL_SECONDS
+        int "SD log interval (seconds)"
+        default 60
+        range 1 3600
+        help
+            Interval for appending one row of temperatures to the daily CSV file.
+
+    config SD_LOG_RETENTION_DAYS
+        int "Days of logs to keep"
+        default 1825
+        range 1 3650
+        help
+            Log files older than this are deleted during startup cleanup.
+
+    config ENABLE_TIME_SYNC
+        bool "Enable WiFi SNTP time sync at startup"
+        default y
+        help
+            Connect to WiFi briefly at startup and synchronize time via NTP.
+
+    config TIME_SYNC_WIFI_SSID
+        string "Time sync WiFi SSID"
+        default ""
+        help
+            WiFi SSID used for startup SNTP sync.
+
+    config TIME_SYNC_WIFI_PASSWORD
+        string "Time sync WiFi password"
+        default ""
+        help
+            WiFi password used for startup SNTP sync.
+
+    config TIME_SYNC_NTP_SERVER
+        string "NTP server"
+        default "pool.ntp.org"
+        help
+            NTP server used for setting ESP32 system time.
+
+    config TIME_SYNC_TIMEOUT_SECONDS
+        int "Time sync timeout (seconds)"
+        default 20
+        range 5 120
+        help
+            Maximum wait time for WiFi connect and SNTP synchronization.
+
+    config ENABLE_SD_LOG_HTTP
+        bool "Enable SD log HTTP server"
+        default y
+        help
+            Keep WiFi connected and serve SD log files over HTTP.
+            Endpoints:
+              - /logs (file listing)
+              - /download?f=YYYY-MM-DD.csv (download file)
+
+    config SD_LOG_HTTP_PORT
+        int "SD log HTTP server port"
+        depends on ENABLE_SD_LOG_HTTP
+        default 80
+        range 1 65535
+        help
+            TCP port used by the SD log HTTP server.
+endmenu
+
 endmenu

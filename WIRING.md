@@ -21,8 +21,8 @@ This document describes all electrical connections between the ESP32 and periphe
 | Sensor | Zone     | ESP32 SO (MISO) GPIO      | ESP32 SCK (CLK) GPIO | ESP32 CS GPIO |
 |--------|----------|---------------------------|----------------------|---------------|
 | 1      | Entrance | GPIO 19                   | GPIO 18              | GPIO 5        |
-| 2      | Middle   | GPIO 34 (input-only pin)  | GPIO 23              | GPIO 17       |
-| 3      | Exit     | GPIO 36 (input-only pin)  | GPIO 13              | GPIO 16       |
+| 2      | Middle   | GPIO 34 (input-only pin)  | GPIO 23              | GPIO 4        |
+| 3      | Exit     | GPIO 27                   | GPIO 13              | GPIO 15       |
 
 Each sensor has its own dedicated SO and SCK lines. No SPI signals are shared between sensors.
 
@@ -86,10 +86,10 @@ Each TM1637 display requires power:
 | 5        | MAX6675 Sensor 1 CS               | Sensor 1            | Entrance              |
 | 34       | MAX6675 Sensor 2 SO (MISO, in-only)| Sensor 2           | Middle                |
 | 23       | MAX6675 Sensor 2 SCK (CLK)        | Sensor 2            | Middle                |
-| 17       | MAX6675 Sensor 2 CS               | Sensor 2            | Middle                |
-| 36       | MAX6675 Sensor 3 SO (MISO, in-only)| Sensor 3           | Exit                  |
+| 4        | MAX6675 Sensor 2 CS               | Sensor 2            | Middle                |
+| 27       | MAX6675 Sensor 3 SO (MISO)        | Sensor 3            | Exit                  |
 | 13       | MAX6675 Sensor 3 SCK (CLK)        | Sensor 3            | Exit                  |
-| 16       | MAX6675 Sensor 3 CS               | Sensor 3            | Exit                  |
+| 15       | MAX6675 Sensor 3 CS               | Sensor 3            | Exit                  |
 | 22       | TM1637 Display 1 CLK              | Display 1           | Entrance              |
 | 21       | TM1637 Display 1 DIO              | Display 1           | Entrance              |
 | 25       | TM1637 Display 2 CLK              | Display 2           | Middle                |
@@ -98,8 +98,23 @@ Each TM1637 display requires power:
 | 33       | TM1637 Display 3 DIO              | Display 3           | Exit                  |
 | 35       | SD Card MISO (input-only)         | SD Card             | Future                |
 | 14       | SD Card MOSI                      | SD Card             | Future                |
-| 27       | SD Card CLK                       | SD Card             | Future                |
-| 4        | SD Card CS                        | SD Card             | Future                |
+| 12       | SD Card CLK                       | SD Card             | Future                |
+| 2        | SD Card CS                        | SD Card             | Future                |
+
+---
+
+### SD Card Module (6-pin) Wiring
+
+| SD Module Pin | ESP32 Pin | Notes |
+|---------------|-----------|-------|
+| VVV (VCC)     | 3.3V      | Do not use 5V logic |
+| GND           | GND       | Common ground required |
+| MISO          | GPIO35    | Input-only, good for DO |
+| MOSI          | GPIO14    | ESP32 output to DI |
+| SCK           | GPIO12    | SPI clock |
+| CS            | GPIO2     | Keep HIGH during boot |
+
+Boot note: GPIO2 and GPIO12 are ESP32 boot-strap pins. If the module holds either in the wrong state during reset, boot can fail.
 
 ---
 
@@ -242,8 +257,8 @@ Make changes, save, and rebuild the project.
         │     ┌───────────────┤ GPIO 19(SO) │
         │     │               │             │
         │     │     ┌─────────┤ GPIO 5(CS1) │
-        │     │     │   ┌─────┤ GPIO17(CS2) │
-        │     │     │   │ ┌───┤ GPIO16(CS3) │
+        │     │     │   ┌─────┤ GPIO4(CS2)  │
+        │     │     │   │ ┌───┤ GPIO15(CS3) │
         │     │     │   │ │   │             │
         ▼     ▼     ▼   ▼ ▼   │             │
       ┌─────────────────────┐ │ GPIO 22 ────┼──→ Display 1 CLK
@@ -255,14 +270,14 @@ Make changes, save, and rebuild the project.
               │               │             │
       ┌─────────────────────┐ │ 3.3V ───────┼──→ All MAX6675 VCC
       │  MAX6675 Sensor 2   │ │ 5V ─────────┼──→ All TM1637 VCC
-      │  (Middle/CS=17)     │ │ GND ────────┼──→ Common GND
+      │  (Middle/CS=4)      │ │ GND ────────┼──→ Common GND
       │  SCK  SO  CS  VCC GND│ └─────────────┘
       └─────────────────────┘
               ▲
               │
       ┌─────────────────────┐
       │  MAX6675 Sensor 3   │     ┌──────────────┐
-      │  (Exit/CS=16)       │     │  TM1637 #1   │ Temperature Display
+      │  (Exit/CS=15)       │     │  TM1637 #1   │ Temperature Display
       │  SCK  SO  CS  VCC GND│     │ CLK DIO 5V G │ Zone: Entrance
       └─────────────────────┘     └──────────────┘
 

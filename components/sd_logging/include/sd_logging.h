@@ -7,10 +7,13 @@
 
 /**
  * @brief Initialize SD card for data logging
- * @param cs_pin Chip Select GPIO pin for SD card
+ * @param miso_pin SD SPI MISO GPIO pin
+ * @param mosi_pin SD SPI MOSI GPIO pin
+ * @param clk_pin SD SPI CLK GPIO pin
+ * @param cs_pin SD SPI CS GPIO pin
  * @return ESP_OK on success
  */
-esp_err_t sd_logging_init(int cs_pin);
+esp_err_t sd_logging_init(int miso_pin, int mosi_pin, int clk_pin, int cs_pin);
 
 /**
  * @brief Log temperature readings to SD card with timestamp

@@ -29,7 +29,7 @@ This document provides detailed hardware setup instructions for the Oven Tempera
      3V3 [  3] [EN]   4
   GPIO36 [  5] [GPIO0] 6
   GPIO39 [  7] [GPIO2] 8
-  GPIO34 [  9] [GPIO4 - SD CS] 10
+   GPIO34 [  9] [GPIO4 - MAX6675 CS2] 10
   GPIO35 [ 11] [GPIO5 - MAX6675 CS1] 12
   GPIO32 [ 13] [GPIO18 - CLK] 14
   GPIO33 [ 15] [GPIO19 - MISO] 16
@@ -62,43 +62,48 @@ ESP32 GND        → USB Serial GND
 ESP32 3V3 (if needed) → USB Serial 3.3V
 ```
 
-### Step 2: SPI Bus Setup (Shared for MAX6675 & SD Card)
-
-**Clock and MISO lines (shared by all devices):**
+### Step 2: MAX6675 Sensor Signal Connections (Dedicated Pins)
 
 ```
-ESP32 GPIO19 (MISO) → MAX6675 #1 SO (Serial Output)
-                   → MAX6675 #2 SO
-                   → MAX6675 #3 SO
-                   → SD Card DO
+Sensor 1 (Entrance):
+   ESP32 GPIO19 (SO/MISO) → MAX6675 #1 SO
+   ESP32 GPIO18 (SCK)     → MAX6675 #1 SCK
+   ESP32 GPIO5  (CS)      → MAX6675 #1 CS
 
-ESP32 GPIO18 (CLK)  → MAX6675 #1 SCK
-                   → MAX6675 #2 SCK
-                   → MAX6675 #3 SCK
-                   → SD Card CLK
-```
+Sensor 2 (Middle):
+   ESP32 GPIO34 (SO/MISO) → MAX6675 #2 SO
+   ESP32 GPIO23 (SCK)     → MAX6675 #2 SCK
+   ESP32 GPIO4  (CS)      → MAX6675 #2 CS
 
-**Note:** MAX6675 is read-only (no MOSI needed). It only outputs data via SO pin.
-
-**MOSI line (for SD Card only):**
-
-```
-ESP32 GPIO23 (MOSI) → SD Card DIN
+Sensor 3 (Exit):
+   ESP32 GPIO27 (SO/MISO) → MAX6675 #3 SO
+   ESP32 GPIO13 (SCK)     → MAX6675 #3 SCK
+   ESP32 GPIO15 (CS)      → MAX6675 #3 CS
 ```
 
 ### Step 3: MAX6675 Chip Select Lines (Individual per Sensor)
 
 ```
 ESP32 GPIO5  → MAX6675 #1 CS (Entrance)
-ESP32 GPIO17 → MAX6675 #2 CS (Middle)
-ESP32 GPIO16 → MAX6675 #3 CS (Exit)
+ESP32 GPIO4  → MAX6675 #2 CS (Middle)
+ESP32 GPIO15 → MAX6675 #3 CS (Exit)
 ```
 
 ### Step 4: SD Card Module
 
 ```
-ESP32 GPIO4 → SD Card CS
+SD module VVV (VCC) → ESP32 3.3V
+SD module GND       → ESP32 GND
+SD module MISO (DO) → ESP32 GPIO35
+SD module MOSI (DI) → ESP32 GPIO14
+SD module SCK       → ESP32 GPIO12
+SD module CS        → ESP32 GPIO2
 ```
+
+Boot strap caution:
+- GPIO2 and GPIO12 are boot strap pins on ESP32.
+- Keep SD-CS (GPIO2) HIGH during reset/boot.
+- Avoid any external pull-up on GPIO12 that can force wrong boot mode.
 
 ### Step 5: Power Distribution
 
